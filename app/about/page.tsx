@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="mb-8 text-2xl font-semibold">About</h1>
+      <h1 className="mb-8 text-2xl font-semibold">About Me</h1>
       <Card>
         <CardHeader>
           <CardTitle className="text-xl">Momiji</CardTitle>
