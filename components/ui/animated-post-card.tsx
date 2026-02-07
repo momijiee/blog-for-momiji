@@ -10,37 +10,39 @@ interface AnimatedPostCardProps{
     children: Post
 }
 
+function getPreviewText(content: string) {
+  return content
+    .replace(/^#{1,6}\s+/gm, "") // headings
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, "") // images
+    .replace(/\[[^\]]*\]\([^)]+\)/g, (m) => m.replace(/\[|\]|\([^)]+\)/g, "")) // links -> text
+    .replace(/`{1,3}[^`]*`{1,3}/g, "") // inline code
+    .replace(/[*_~>-]+/g, "") // common markdown tokens
+    .replace(/\n+/g, " ")
+    .trim();
+}
+
 const cardVariants = {
-    hover: {
-        y: -6,
-        boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)"
-    },
+    hover: { y: -6 },
     tap: { scale: 0.98 }
 }
 
-function getPreviewText(content: string) {
-    return content
-      .replace(/^#{1,6}\s+/gm, "") // headings
-      .replace(/!\[[^\]]*\]\([^)]+\)/g, "") // images
-      .replace(/\[[^\]]*\]\([^)]+\)/g, (m) => m.replace(/\[|\]|\([^)]+\)/g, "")) // links -> text
-      .replace(/`{1,3}[^`]*`{1,3}/g, "") // inline code
-      .replace(/[*_~>-]+/g, "") // common markdown tokens
-      .replace(/\n+/g, " ")
-      .trim();
-}
 
 export function AnimatedPostCard({ children }:AnimatedPostCardProps) {
     return(
         <Link href={`/blog/${children.slug}`}>
             <motion.div
-                  className="overflow-hidden rounded-xl inline-block"
                   variants={cardVariants}
                   whileHover="hover"
                   whileTap="tap"
                   transition={{ type: "spring", stiffness: 300, damping: 30}}
             >
-            <Card className="overflow-hidden cursor-pointer transition-colors">
-                
+              <Card className="
+                overflow-hidden rounded-xl inline-block
+                transition-shadow shadow-md       
+                hover:shadow-xl 
+                dark:ring-1 ring-white/10
+                dark:hover:ring-white/30
+              ">
                 {children.image && (
                   <div className="relative aspect-[2/1] w-full">
                     <Image
@@ -62,7 +64,7 @@ export function AnimatedPostCard({ children }:AnimatedPostCardProps) {
                     {children.createdAt}
                   </p>
                 </CardContent>
-            </Card>
+              </Card>
             </motion.div>
         </Link>
     )
