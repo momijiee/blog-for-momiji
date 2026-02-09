@@ -18,8 +18,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Momiji's Blog",
-  description: "A personal blog",
+  title: {
+    default: "Momiji · 思考 / 技术 / 个人系统",
+    template: "%s | Momiji",
+  },
+  description: "记录思考、技术成长与个人系统构建的个人博客。",
 };
 
 export default function RootLayout({

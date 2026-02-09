@@ -1,15 +1,39 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import MdxContent from "@/components/mdx-content";
-import { getAllPosts, getCompiledPostBySlug } from "@/lib/posts";
+import { getAllPosts, getPostBySlug, getCompiledPostBySlug} from "@/lib/posts";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AnimatedNavLink } from "@/components/ui/animated-nav-link";
 
 type Props = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
   return posts.map((post) => ({ slug: post.slug }));
+}
+
+export async function generateMetadata({ params }: Props) {
+  const { slug } = await params;
+  const post = getPostBySlug(slug)
+
+  if (!post) {
+    notFound()
+  }
+
+  return {
+    title: post.title,
+    description: post.description,
+    openGraph: {
+      title: post.title,
+      description: post.description,
+      type: "article",
+      url: `https://momiji.dev/blog/${post.slug}`,
+      images: post.image
+        ? [{ url: post.image }]
+        : undefined,
+    },
+  }
 }
 
 export default async function BlogPostPage({ params }: Props) {
@@ -20,12 +44,12 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <Link
+      <AnimatedNavLink
         href="/"
         className="mb-6 inline-block text-sm text-muted-foreground hover:underline"
       >
         ← Back to articles
-      </Link>
+      </AnimatedNavLink>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">{post.title}</CardTitle>

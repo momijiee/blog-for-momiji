@@ -3,13 +3,15 @@
 
 ## [v0.3.0] - 2026-02
 ### Added
-- 
+- Added a click animation to the theme toggle button.
+- Implemented dynamic metadata generation for blog posts using the `generateMetadata` function.
+- Added a `description` field to the blog post template and frontmatter for SEO purposes.
 
 ### Fixed
-- 
+- N/A
 
 ### Changed
-- 
+- N/A
 
 ---
 ## [v0.2.2] - 2026-02-07
@@ -17,7 +19,7 @@
 - N/A
 
 ### Fixed
-- Improve card visual effect in dark mode
+- Enhanced card component visuals to be fully compatible with both light and dark themes.
 
 ### Changed
 - N/A
@@ -28,7 +30,7 @@
 - N/A
 
 ### Fixed
-- Theme bug of the first click
+- Fixed theme toggle button failure on first click by correctly resolving the initial `"system"` theme preference. Implemented proper client-side mounting logic to prevent hydration mismatch.
 
 ### Changed
 - N/A
