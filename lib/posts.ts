@@ -34,6 +34,7 @@ export function getAllPosts(): Post[] {
         id: slug,
         slug,
         title: (data.title as string) ?? slug,
+        description: data.description as string | undefined,
         content: content.trim(),
         createdAt: formatCreatedAt(data.createdAt),
         image: data.image as string | undefined,

@@ -10,6 +10,7 @@ interface AnimatedPostCardProps{
     children: Post
 }
 
+/*
 function getPreviewText(content: string) {
   return content
     .replace(/^#{1,6}\s+/gm, "") // headings
@@ -20,6 +21,7 @@ function getPreviewText(content: string) {
     .replace(/\n+/g, " ")
     .trim();
 }
+*/
 
 const cardVariants = {
     hover: { y: -6 },
@@ -58,7 +60,7 @@ export function AnimatedPostCard({ children }:AnimatedPostCardProps) {
                 </CardHeader>
                 <CardContent>
                   <p className="line-clamp-2 text-sm text-muted-foreground inline-block">
-                    {getPreviewText(children.content)}
+                    {children.description}
                   </p>
                   <p className="mt-2 text-right text-xs text-muted-foreground inline-block">
                     {children.createdAt}
