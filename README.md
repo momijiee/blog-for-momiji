@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Momiji's Blog
 
-## Getting Started
+A personal, content-driven blog built with **Next.js App Router**, focused on long-form writing, reflective essays, and technical notes.
 
-First, run the development server:
+This project treats both **code and content as first-class citizens**, emphasizing clarity, maintainability, and long-term evolution rather than short-term metrics.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## ✨ Features
+
+* 📝 **MDX-based content system**
+  Blog posts live in the repository and are versioned with Git.
+
+* 🌗 **Light / Dark theme support**
+  System-aware theme switching with smooth animations.
+
+* 🎴 **Animated post preview cards**
+  Subtle hover/tap interactions powered by Framer Motion.
+
+* 🔍 **SEO-friendly**
+  Static generation, metadata support, and sitemap integration.
+
+* 🧠 **Content-first design**
+  Post previews use explicit descriptions instead of auto-truncated content.
+
+---
+
+## 🧱 Tech Stack
+
+* **Framework:** Next.js (App Router)
+* **Language:** TypeScript
+* **Styling:** Tailwind CSS
+* **Animation:** Framer Motion
+* **Icons:** lucide-react
+* **Content:** MDX
+* **Theme:** next-themes
+
+---
+
+## 📂 Project Structure
+
+```text
+.
+├── app/                # Next.js app router
+│   ├── blog/[slug]/    # Blog post pages
+│   ├── about/          # About Me page
+│   └── layout.tsx      # Global layout
+├── components/         # UI components
+├── content/posts/      # Blog posts (MDX)
+├── lib/                # Content utilities
+├── types/              # Shared TypeScript types
+└── public/             # Static assets
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Getting Started
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# install dependencies
+npm install
 
-## Learn More
+# run development server
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📝 Writing Posts
 
-## Deploy on Vercel
+Blog posts are stored in `content/posts` as `.mdx` files.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Each post includes front matter such as:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```yaml
+title: My First Post
+description: A short summary shown in preview cards
+createdAt: 2026-02-01
+```
+
+Content changes are tracked with Git, making the writing process transparent and reversible.
+
+---
+
+## 🧭 Versioning Philosophy
+
+* **Code changes** follow semantic versioning when appropriate.
+* **Content changes** are committed independently and treated as part of the project history.
+* Git is used as a **time axis** for both technical evolution and thought development.
+
+---
+
+## 📌 Roadmap
+
+* [ ] Improve content navigation
+* [ ] Add RSS feed
+* [ ] Enhance metadata and OG images
+* [ ] Explore headless CMS integration (optional)
+
+---
+
+## 🪴 About
+
+This blog is part of a long-term personal project exploring technology, productivity, and the reconstruction of self beyond meritocracy.
+
+Not optimized for virality. Optimized for clarity, depth, and continuity.
+
+---
+
+## 📄 License
+
+MIT
