@@ -1,6 +1,11 @@
 # Changelog
 
 ---
+## [v0.5.2] - 2026-02-13
+### Fixed
+- **Vercel Deployment**: Resolved production build failures caused by missing dependencies
+
+---
 ## [v0.5.1] - 2026-02-13
 ### Changed
 - Enhanced visual presentation of table of contents
