@@ -11,28 +11,6 @@ interface AnimatedNavLinkProps {
     className?: string
 }
 
-/*
-export function AnimatedNavLink({ href, children, className }: AnimatedNavLinkProps) {
-    return (
-        <Link href={href} className={cn("relative font-medium", className)}>
-            <motion.span
-                className="relative z-10"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            >
-                {children}
-            </motion.span>
-            <motion.div
-                className="absolute bottom-0 left-0 h-0.5 bg-current rounded-full"
-                initial={{ width: 0 }}
-                whileHover={{ width: "100%" }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-            />
-        </Link>
-    )
-}
-*/
 export function AnimatedNavLink({ href, children, className }: AnimatedNavLinkProps) {
     return (
         <Link href={href} passHref>

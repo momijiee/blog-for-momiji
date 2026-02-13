@@ -55,7 +55,7 @@ export default async function BlogPostPage({ params }: Props) {
           </AnimatedNavLink>
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">{post.title}</CardTitle>
+              <CardTitle className="text-3xl">{post.title}</CardTitle>
               <p className="text-sm text-muted-foreground">{post.createdAt}</p>
             </CardHeader>
             <CardContent>

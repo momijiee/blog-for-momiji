@@ -10,19 +10,6 @@ interface AnimatedPostCardProps{
     children: BasePost
 }
 
-/*
-function getPreviewText(content: string) {
-  return content
-    .replace(/^#{1,6}\s+/gm, "") // headings
-    .replace(/!\[[^\]]*\]\([^)]+\)/g, "") // images
-    .replace(/\[[^\]]*\]\([^)]+\)/g, (m) => m.replace(/\[|\]|\([^)]+\)/g, "")) // links -> text
-    .replace(/`{1,3}[^`]*`{1,3}/g, "") // inline code
-    .replace(/[*_~>-]+/g, "") // common markdown tokens
-    .replace(/\n+/g, " ")
-    .trim();
-}
-*/
-
 const cardVariants = {
     hover: { y: -6 },
     tap: { scale: 0.98 }
@@ -56,7 +43,7 @@ export function AnimatedPostCard({ children }:AnimatedPostCardProps) {
                   </div>
                 )}
                 <CardHeader>
-                  <CardTitle className="text-lg">{children.title}</CardTitle>
+                  <CardTitle className="text-xl">{children.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="line-clamp-2 text-sm text-muted-foreground inline-block">

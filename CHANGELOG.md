@@ -1,5 +1,15 @@
 # Changelog
 
+---
+## [v0.6.0] - 2026-02-13
+### Added
+- Implement table of contents generation for blog posts with dynamic heading highlighting
+- Add "Back to Top" button for improved navigation on long articles
+
+### Changed
+- Optimize scroll-to-heading navigation logic with smooth scrolling behavior
+- Enhance visual feedback for active table of contents items
+- Improve click-jumping accuracy and user interaction experience
 
 ---
 ## [v0.5.3] - 2026-02-13
