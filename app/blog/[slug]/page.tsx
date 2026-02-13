@@ -44,7 +44,7 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
+    <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
         <div className="lg:col-span-3">
           <AnimatedNavLink
@@ -60,7 +60,7 @@ export default async function BlogPostPage({ params }: Props) {
             </CardHeader>
             <CardContent>
               {post.image && (
-                <div className="relative mb-6 aspect-video w-full overflow-hidden rounded-lg">
+                <div className="prose relative mb-6 aspect-video w-full overflow-hidden rounded-lg dark:prose-invert">
                   <Image
                     src={post.image}
                     alt={post.title}
@@ -74,7 +74,12 @@ export default async function BlogPostPage({ params }: Props) {
             </CardContent>
           </Card>
         </div>
-        <aside className="hidden lg:block lg:col-span-1 sticky top-20 h-fit">
+        <aside className="
+          hidden 
+          lg:block lg:col-span-1 
+          sticky top-20 h-fit
+          p-4 bg-white dark:bg-black rounded-xl shadow-sm border border-gray-100 dark:border-gray-800
+        ">
           <TableOfContents headings={post.headings} />
         </aside>
       </div>

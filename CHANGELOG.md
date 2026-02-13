@@ -1,6 +1,15 @@
 # Changelog
 
 ---
+## [v0.5.1] - 2026-02-13
+### Changed
+- Enhanced visual presentation of table of contents
+- Improved styling for better readability and user experience
+
+### Fixed
+- **Build Failure**: Resolved TypeScript compilation error caused by wrong type import
+
+---
 ## [v0.5.0] - 2026-02-13
 ### Added
 - **Table of Contents**: Implemented automatic TOC generation for blog posts
@@ -8,7 +17,7 @@
   - Integrated `github-slugger` for consistent heading ID generation
   - Created new TOC component to render nested navigation structure
   - Injected TOC component into MDX content layout
-  
+
 ### Changed
 - Migrated MDX rendering from `next-mdx-remote` client-side components to `next-mdx-remote/rsc` server-side components
 - Refactored `lib/posts.ts`: removed `serialize` function to align with server-side rendering approach
