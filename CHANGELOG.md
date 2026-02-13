@@ -1,5 +1,11 @@
 # Changelog
 
+
+---
+## [v0.5.3] - 2026-02-13
+### Security
+- **Upgraded `next-mdx-remote` to v6.0.0** to fix a high-severity vulnerability
+
 ---
 ## [v0.5.2] - 2026-02-13
 ### Fixed
