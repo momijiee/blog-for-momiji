@@ -1,7 +1,5 @@
-"use client";
-
-import { MDXRemote, type MDXRemoteSerializeResult } from "next-mdx-remote";
-import { useEffect, useState } from "react";
+import { MDXRemote, type MDXRemoteSerializeResult } from "next-mdx-remote/rsc";
+import rehypeSlug from "rehype-slug";
 
 const components = {
   h1: ({ children, ...props }: any) => (
@@ -49,23 +47,22 @@ const components = {
       {children}
     </pre>
   ),
+  li: ({ children, ...props }: any) => (
+    <li className="leading-7 list-disc ml-6">
+      {children}
+    </li>
+  ),
 };
 
-export default function MdxContent({
-  source,
-}: {
-  source: MDXRemoteSerializeResult;
-}) {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return <div>Loading...</div>;
-  }
-
-  return <MDXRemote {...source} components={components} />;
+export default function MdxContent({ source }: { source: string }) {
+  return <MDXRemote 
+    source={source} 
+    components={components}
+    options={{
+      mdxOptions: {
+        rehypePlugins:[rehypeSlug]
+      }
+    }}
+    />;
 }
 

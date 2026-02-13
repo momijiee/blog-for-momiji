@@ -18,6 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://momiji.dev"),
   title: {
     default: "Momiji · 思考 / 技术 / 个人系统",
     template: "%s | Momiji",

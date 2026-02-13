@@ -1,5 +1,23 @@
 # Changelog
 
+---
+## [v0.5.0] - 2026-02-13
+### Added
+- **Table of Contents**: Implemented automatic TOC generation for blog posts
+  - Integrated `rehype-slug` to add ID attributes to all heading elements
+  - Integrated `github-slugger` for consistent heading ID generation
+  - Created new TOC component to render nested navigation structure
+  - Injected TOC component into MDX content layout
+  
+### Changed
+- Migrated MDX rendering from `next-mdx-remote` client-side components to `next-mdx-remote/rsc` server-side components
+- Refactored `lib/posts.ts`: removed `serialize` function to align with server-side rendering approach
+
+### Fixed
+- Resolved unordered list display issue by adding custom `li` styling in `mdx-content.tsx`
+  - Added `list-disc` and `ml-6` Tailwind classes to properly render bullet points
+
+---
 ## [v0.4.0] - 2026-02-10
 ## Added
 - Blog listing page: Refactored article preview cards to display the curated `post.description` from frontmatter instead of the raw, stripped markdown content. This provides concise, purpose-written summaries and improves page readability and performance.

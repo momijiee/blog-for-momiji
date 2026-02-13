@@ -1,10 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import MdxContent from "@/components/mdx-content";
-import { getAllPosts, getPostBySlug, getCompiledPostBySlug} from "@/lib/posts";
+import { getAllPosts, getPostBySlug} from "@/lib/posts";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AnimatedNavLink } from "@/components/ui/animated-nav-link";
+import { TableOfContents } from "@/components/ui/table-of-content"
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -38,38 +39,45 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = await getCompiledPostBySlug(slug);
+  const post = getPostBySlug(slug);
 
   if (!post) notFound();
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <AnimatedNavLink
-        href="/"
-        className="mb-6 inline-block text-sm text-muted-foreground hover:underline"
-      >
-        ← Back to articles
-      </AnimatedNavLink>
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">{post.title}</CardTitle>
-          <p className="text-sm text-muted-foreground">{post.createdAt}</p>
-        </CardHeader>
-        <CardContent>
-          {post.image && (
-            <div className="relative mb-6 aspect-video w-full overflow-hidden rounded-lg">
-              <Image
-                src={post.image}
-                alt={post.title}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-          )}
-          <MdxContent source={post.mdxSource} />
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+        <div className="lg:col-span-3">
+          <AnimatedNavLink
+            href="/"
+            className="mb-6 inline-block text-sm text-muted-foreground hover:underline"
+          >
+          ← Back to articles
+          </AnimatedNavLink>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">{post.title}</CardTitle>
+              <p className="text-sm text-muted-foreground">{post.createdAt}</p>
+            </CardHeader>
+            <CardContent>
+              {post.image && (
+                <div className="relative mb-6 aspect-video w-full overflow-hidden rounded-lg">
+                  <Image
+                    src={post.image}
+                    alt={post.title}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                </div>
+              )}
+              <MdxContent source={post.content} />
+            </CardContent>
+          </Card>
+        </div>
+        <aside className="hidden lg:block lg:col-span-1 sticky top-20 h-fit">
+          <TableOfContents headings={post.headings} />
+        </aside>
+      </div>
     </div>
   );
 }
