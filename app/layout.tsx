@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { AnimatedNavLink } from "@/components/ui/animated-nav-link"
+import { BackToTop } from "@/components/ui/back-to-top";
 
 
 const geistSans = Geist({
@@ -55,6 +56,7 @@ export default function RootLayout({
         <footer className="border-t py-6 text-center text-sm text-muted-foreground">
           © {new Date().getFullYear()} Momiji
         </footer>
+        <BackToTop/>
         </ThemeProvider>
       </body>
     </html>
