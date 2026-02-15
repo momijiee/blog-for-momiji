@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
@@ -47,7 +46,8 @@ export default function RootLayout({
           <nav className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
             <div className="flex gap-6">
               <AnimatedNavLink href="/">Home</AnimatedNavLink>
-              <AnimatedNavLink href="/about">About</AnimatedNavLink>
+              <AnimatedNavLink href="/article">Article</AnimatedNavLink>
+              <AnimatedNavLink href="/contact">Contact</AnimatedNavLink>
             </div>
             <ThemeToggle />
           </nav>

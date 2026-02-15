@@ -3,11 +3,11 @@
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { BasePost } from "@/types/post";
+import { BasePost, PostWithHeadings } from "@/types/post";
 import Image from "next/image";
 
 interface AnimatedPostCardProps{
-    children: BasePost
+    children: BasePost | PostWithHeadings
 }
 
 const cardVariants = {
