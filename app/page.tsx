@@ -10,7 +10,8 @@ import { BasePost, PostWithHeadings } from "@/types/post";
 
 
 export default function Home() {
-  const post = getPostBySlug('meritocracy')!;
+  const post1 = getPostBySlug('meritocracy')!;
+  const post2 = getPostBySlug('from-being-seen-to-living')!;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
@@ -58,7 +59,9 @@ export default function Home() {
       <br/>
       <br/>
       <h1 className="mb-8 text-2xl font-semibold">推荐阅读</h1>
-      <AnimatedPostCard>{post}</AnimatedPostCard>
+      <AnimatedPostCard>{post1}</AnimatedPostCard>
+      <br/>
+      <AnimatedPostCard>{post2}</AnimatedPostCard>
     </div>
   );
 }

@@ -48,7 +48,7 @@ export default async function BlogPostPage({ params }: Props) {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
         <div className="lg:col-span-3">
           <AnimatedNavLink
-            href="/"
+            href="/article"
             className="mb-6 inline-block text-sm text-muted-foreground hover:underline"
           >
           ← Back to articles
