@@ -3,8 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { AnimatedNavLink } from "@/components/ui/animated-nav-link"
+import { NavLink } from "@/components/ui/nav-link"
 import { BackToTop } from "@/components/ui/back-to-top";
+import { CategoryNavMenu } from "@/components/ui/category-nav-menu";
 
 
 const geistSans = Geist({
@@ -44,10 +45,10 @@ export default function RootLayout({
         >
         <header className="border-b">
           <nav className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
-            <div className="flex gap-6">
-              <AnimatedNavLink href="/">Home</AnimatedNavLink>
-              <AnimatedNavLink href="/article">Article</AnimatedNavLink>
-              <AnimatedNavLink href="/contact">Contact</AnimatedNavLink>
+            <div className="flex gap-1">
+              <NavLink href="/">Home</NavLink>
+              <CategoryNavMenu />
+              <NavLink href="/contact">Contact</NavLink>
             </div>
             <ThemeToggle />
           </nav>

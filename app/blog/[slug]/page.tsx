@@ -4,8 +4,9 @@ import { getAllPosts, getPostBySlug} from "@/lib/posts";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AnimatedNavLink } from "@/components/ui/animated-nav-link";
+import { NavLink } from "@/components/ui/nav-link";
 import { TableOfContents } from "@/components/ui/table-of-content"
+import { TagBadge } from "@/components/ui/tag-badge";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -47,16 +48,41 @@ export default async function BlogPostPage({ params }: Props) {
     <div className="mx-auto max-w-4xl px-4 py-8">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
         <div className="lg:col-span-3">
-          <AnimatedNavLink
+          <NavLink
             href="/article"
-            className="mb-6 inline-block text-sm text-muted-foreground hover:underline"
+            className="mb-6 inline-block text-sm text-muted-foreground"
           >
           ← Back to articles
-          </AnimatedNavLink>
+          </NavLink>
           <Card>
             <CardHeader>
               <CardTitle className="text-3xl">{post.title}</CardTitle>
-              <p className="text-sm text-muted-foreground">{post.createdAt}</p>
+              <div className="flex flex-col gap-2 mt-3">
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  {post.category && (
+                    <Link
+                      href={`/article?category=${encodeURIComponent(post.category)}`}
+                      className="hover:text-foreground transition-colors"
+                    >
+                      分类: {post.category}
+                    </Link>
+                  )}
+                  <span>{post.createdAt}</span>
+                </div>
+                
+                {/* 标签显示 */}
+                {post.tags && post.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {post.tags.map((tag) => (
+                      <TagBadge
+                        key={tag}
+                        tag={tag}
+                        href={`/article?tag=${encodeURIComponent(tag)}`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
               {post.image && (
