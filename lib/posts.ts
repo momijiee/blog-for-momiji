@@ -11,6 +11,13 @@ import { toString } from "mdast-util-to-string";
 
 const postsDir = path.join(process.cwd(), "content", "posts");
 
+// 缓存机制
+const postCache = new Map<string, PostWithHeadings>();
+let allPostsCache: BasePost[] | null = null;
+
+/**
+ * 提取文章中的标题并生成slug
+ */
 export function extractHeadings(content: string) {
   const slugger = new GithubSlugger();
   const tree = unified()
@@ -34,58 +41,119 @@ export function extractHeadings(content: string) {
   return headings;
 }
 
+/**
+ * 格式化创建日期
+ */
 function formatCreatedAt(value: unknown): string {
   if (value instanceof Date) return value.toISOString().slice(0, 10);
   if (typeof value === "string") return value;
   return "";
 }
 
+/**
+ * 读取并解析文章数据
+ */
+function getPostData(filePath: string): { data: matter.GrayMatterFile<string>['data'], content: string } | null {
+  if (!fs.existsSync(filePath)) return null;
+  
+  const fileContent = fs.readFileSync(filePath, "utf-8");
+  const { data, content } = matter(fileContent);
+  
+  return {
+    data,
+    content: content.trim()
+  };
+}
+
+/**
+ * 获取所有博客文章用于列表展示
+ * 使用缓存提高性能
+ */
 export function getAllPosts(): BasePost[] {
+  // 如果缓存中有数据，直接返回
+  if (allPostsCache) {
+    return allPostsCache;
+  }
+
   if (!fs.existsSync(postsDir)) return [];
 
   const files = fs.readdirSync(postsDir);
   const mdxFiles = files.filter((f) => path.extname(f) === ".mdx");
 
-  return mdxFiles
+  const posts = mdxFiles
     .map((file) => {
       const slug = path.basename(file, ".mdx");
       const filePath = path.join(postsDir, file);
-      const fileContent = fs.readFileSync(filePath, "utf-8");
-      const { data, content } = matter(fileContent);
+      
+      const postData = getPostData(filePath);
+      if (!postData) return null;
+      
+      const { data, content } = postData;
 
-      return {
+      const post: BasePost = {
         id: slug,
         slug,
         title: (data.title as string) ?? slug,
         description: data.description as string | undefined,
-        content: content.trim(),
+        content: content,
         createdAt: formatCreatedAt(data.createdAt),
         image: data.image as string | undefined,
-      } satisfies BasePost;
+      };
+      
+      return post;
     })
-    .sort((a, b) =>
-      String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
-    );
+    .filter((post): post is BasePost => post !== null);
+    
+  const sortedPosts = posts.sort((a, b) =>
+    String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
+  );
+  
+  // 存入缓存
+  //allPostsCache = sortedPosts;
+  
+  return sortedPosts;
 }
 
+/**
+ * 根据slug获取单篇博客文章（包含标题信息）
+ * 使用缓存提高性能
+ */
 export function getPostBySlug(slug: string): PostWithHeadings | undefined {
-  const filePath = path.join(postsDir, `${slug}.mdx`);
-  if (!fs.existsSync(filePath)) return undefined;
-
-  const fileContent = fs.readFileSync(filePath, "utf-8");
-  const { data, content } = matter(fileContent);
-  const contentTrim = content.trim()
-  const headings = extractHeadings(contentTrim);
+  // 如果缓存中有数据，直接返回
+  if (postCache.has(slug)) {
+    return postCache.get(slug);
+  }
   
-
-  return {
+  const filePath = path.join(postsDir, `${slug}.mdx`);
+  
+  const postData = getPostData(filePath);
+  if (!postData) return undefined;
+  
+  const { data, content } = postData;
+  const headings = extractHeadings(content);
+  
+  const post: PostWithHeadings = {
     id: slug,
     slug,
     title: (data.title as string) ?? slug,
     description: data.description as string | undefined,
-    content: contentTrim,
+    content: content,
     createdAt: formatCreatedAt(data.createdAt),
     image: data.image as string | undefined,
     headings: headings,
   };
+  
+  // 存入缓存
+  //postCache.set(slug, post);
+  
+  return post;
+}
+
+/**
+ * 清除缓存
+ * 在开发环境或内容更新时调用
+ */
+export function clearPostCache(): void {
+  postCache.clear();
+  allPostsCache = null;
 }
