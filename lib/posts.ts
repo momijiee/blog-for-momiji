@@ -11,10 +11,6 @@ import { toString } from "mdast-util-to-string";
 
 const postsDir = path.join(process.cwd(), "content", "posts");
 
-// 缓存机制
-const postCache = new Map<string, PostWithHeadings>();
-let allPostsCache: BasePost[] | null = null;
-
 /**
  * 提取文章中的标题并生成slug
  */
@@ -67,13 +63,8 @@ function getPostData(filePath: string): { data: matter.GrayMatterFile<string>['d
 
 /**
  * 获取所有博客文章用于列表展示
- * 使用缓存提高性能
  */
 export function getAllPosts(): BasePost[] {
-  // 如果缓存中有数据，直接返回
-  if (allPostsCache) {
-    return allPostsCache;
-  }
 
   if (!fs.existsSync(postsDir)) return [];
 
@@ -98,6 +89,8 @@ export function getAllPosts(): BasePost[] {
         content: content,
         createdAt: formatCreatedAt(data.createdAt),
         image: data.image as string | undefined,
+        tags: data.tags as string[] | undefined,
+        category: data.category as string | undefined
       };
       
       return post;
@@ -108,21 +101,13 @@ export function getAllPosts(): BasePost[] {
     String(b.createdAt || "").localeCompare(String(a.createdAt || ""))
   );
   
-  // 存入缓存
-  //allPostsCache = sortedPosts;
-  
   return sortedPosts;
 }
 
 /**
  * 根据slug获取单篇博客文章（包含标题信息）
- * 使用缓存提高性能
  */
 export function getPostBySlug(slug: string): PostWithHeadings | undefined {
-  // 如果缓存中有数据，直接返回
-  if (postCache.has(slug)) {
-    return postCache.get(slug);
-  }
   
   const filePath = path.join(postsDir, `${slug}.mdx`);
   
@@ -140,20 +125,53 @@ export function getPostBySlug(slug: string): PostWithHeadings | undefined {
     content: content,
     createdAt: formatCreatedAt(data.createdAt),
     image: data.image as string | undefined,
+    tags: data.tags as string[] | undefined,
+    category: data.category as string | undefined,
     headings: headings,
   };
-  
-  // 存入缓存
-  //postCache.set(slug, post);
   
   return post;
 }
 
-/**
- * 清除缓存
- * 在开发环境或内容更新时调用
+/*
+ * 获取所有分类
  */
-export function clearPostCache(): void {
-  postCache.clear();
-  allPostsCache = null;
+export function getAllCategories(): string[] {
+  const posts = getAllPosts();
+  const categories = new Set<string>();
+  posts.forEach(post => {
+    if (post.category) categories.add(post.category);
+  });
+  return Array.from(categories).sort();
 }
+
+/*
+ * 获取所有标签
+ */
+export function getAllTags(): string[] {
+  const posts = getAllPosts();
+  const tags = new Set<string>();
+  posts.forEach(post => {
+    post.tags?.forEach(tag => tags.add(tag));
+  });
+  return Array.from(tags).sort();
+}
+
+// 根据分类获取所有博客
+export function getPostsByCategory(category: string): BasePost[] {
+  return getAllPosts().filter(post => post.category === category);
+}
+
+// 根据标签获取所有博客
+export function getPostsByTag(tag: string): BasePost[] {
+  return getAllPosts().filter(post => post.tags?.includes(tag));
+}
+
+
+
+
+
+
+
+
+

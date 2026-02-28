@@ -6,6 +6,8 @@ export interface BasePost {
   content: string;
   createdAt: string;
   image?: string;
+  tags?: string[];
+  category?: string;
 }
 
 export interface PostWithHeadings extends BasePost {
