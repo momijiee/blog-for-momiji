@@ -1,6 +1,22 @@
 # Changelog
 
 ---
+## [v0.6.1] - 2026-02-28
+### Added
+- Support for all heading levels (h1-h6) in table of contents with hierarchical indentation
+- Multiple visible headings highlighting: all headings currently visible in viewport are now highlighted simultaneously
+
+### Changed
+- Redesigned TOC highlighting from bold text to background color rectangles
+- Improved highlight animation: directional expansion/collapse effect
+- Enhanced visual feedback with theme-aware colors and smooth transitions
+
+### Fixed
+- Fixed bug where last section couldn't be highlighted if too short to scroll to top
+- Fixed height stability issue: TOC component now maintains consistent vertical height during scrolling
+- Removed layout-affecting margins in favor of absolute positioning for background highlights
+
+---
 ## [v0.6.0] - 2026-02-13
 ### Added
 - Implement table of contents generation for blog posts with dynamic heading highlighting

@@ -79,25 +79,66 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
     return "text-[0.85rem]";
   };
 
+  // Check if the previous or next heading is also active
+  const isAdjacentActive = (index: number) => {
+    const prevActive = index > 0 && activeIds.has(headings[index - 1].slug);
+    const nextActive = index < headings.length - 1 && activeIds.has(headings[index + 1].slug);
+    return { prevActive, nextActive };
+  };
+
   return (
     <div>
       <h3 className="text-lg font-semibold mb-2 text-muted-foreground">
         文章大纲
       </h3>
-      <nav className="space-y-1 text-sm">
-        {headings.map((h) => (
-          <a
-            key={h.slug}
-            href={`#${h.slug}`}
-            className={`block py-1.5 px-2 -mx-2 rounded-md transition-all ${
-              activeIds.has(h.slug)
-                ? "bg-slate-100 dark:bg-slate-700 text-foreground"
-                : "text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-foreground"
-            } ${getIndentClass(h.depth)} ${getFontSizeClass(h.depth)}`}
-          >
-            {h.text}
-          </a>
-        ))}
+      <nav className="text-sm space-y-1">
+        {headings.map((h, index) => {
+          const isActive = activeIds.has(h.slug);
+          const { prevActive, nextActive } = isAdjacentActive(index);
+          
+          return (
+            <div
+              key={h.slug}
+              className="relative"
+            >
+              {/* Background highlight layer with animation */}
+              <div
+                className={`absolute -mx-2 transition-all duration-300 ease-out ${
+                  isActive
+                    ? "bg-slate-200 dark:bg-slate-800"
+                    : "bg-transparent"
+                } ${
+                  // Rounded corners logic
+                  isActive && prevActive && nextActive ? "" : // No rounding when sandwiched
+                  isActive && prevActive ? "rounded-b-md" : // Bottom rounding only
+                  isActive && nextActive ? "rounded-t-md" : // Top rounding only
+                  isActive ? "rounded-md" : "" // Full rounding when standalone
+                }`}
+                style={{
+                  top: prevActive && isActive ? "-0.25rem" : 0,
+                  bottom: nextActive && isActive ? "-0.25rem" : 0,
+                  left: 0,
+                  right: 0,
+                  transformOrigin: prevActive ? "top" : nextActive ? "bottom" : "center",
+                  transform: isActive ? "scaleY(1)" : "scaleY(0)",
+                  opacity: isActive ? 1 : 0,
+                }}
+              />
+              
+              {/* Content layer */}
+              <a
+                href={`#${h.slug}`}
+                className={`relative block py-1.5 px-2 transition-colors duration-200 ${
+                  isActive
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                } ${getIndentClass(h.depth)} ${getFontSizeClass(h.depth)}`}
+              >
+                {h.text}
+              </a>
+            </div>
+          );
+        })}
       </nav>
     </div>
   );
