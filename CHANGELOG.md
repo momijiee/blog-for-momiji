@@ -1,6 +1,12 @@
 # Changelog
 
 ---
+## [v0.7.0] - 2026-02-28
+### Added
+- **Article Taxonomy System**: Implemented comprehensive tag and category support for better content organization.
+- **Navigation Enhancement**: Added category dropdown menus to the main navigation bar.
+
+---
 ## [v0.6.1] - 2026-02-28
 ### Added
 - Support for all heading levels (h1-h6) in table of contents with hierarchical indentation
@@ -91,7 +97,6 @@
 - Dark mode support for the entire blog
 - Improved hover and transition animations on blog previews
 
-
 ### Fixed
 - Optimized navigation bar links and layout for better UX
 
@@ -102,4 +107,3 @@
 - Tailwind CSS + shadcn/ui styling
 - MDX content rendering
 - Dynamic routing for blog posts
-

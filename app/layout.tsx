@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/ui/theme-provider"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { NavLink } from "@/components/ui/nav-link"
 import { BackToTop } from "@/components/ui/back-to-top";
-import { CategoryNavMenu } from "@/components/ui/category-nav-menu";
 
 
 const geistSans = Geist({
@@ -47,7 +46,7 @@ export default function RootLayout({
           <nav className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
             <div className="flex gap-1">
               <NavLink href="/">Home</NavLink>
-              <CategoryNavMenu />
+              <NavLink href="/article">Article</NavLink>
               <NavLink href="/contact">Contact</NavLink>
             </div>
             <ThemeToggle />
