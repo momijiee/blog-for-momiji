@@ -12,19 +12,39 @@ interface FilterSidebarProps {
 export function FilterSidebar({ categories, tags }: FilterSidebarProps) {
   const searchParams = useSearchParams()
   const currentCategory = searchParams.get("category")
-  const currentTag = searchParams.get("tag")
+  const currentTags = searchParams.getAll("tags")
 
-  const getFilterUrl = (type: "category" | "tag", value: string) => {
+  const getFilterUrl = (type: "category" | "tag", value: string, isToggle: boolean = false) => {
     const params = new URLSearchParams(searchParams)
     if (type === "category") {
       params.set("category", value)
-      params.delete("tag")
+      params.delete("tags")
     } else {
-      params.set("tag", value)
+      // 处理多标签切换
+      const tags = params.getAll("tags")
+      if (isToggle) {
+        // 切换模式：如果已选中则移除，否则添加
+        if (tags.includes(value)) {
+          params.delete("tags")
+          tags.forEach(tag => {
+            if (tag !== value) {
+              params.append("tags", tag)
+            }
+          })
+        } else {
+          params.append("tags", value)
+        }
+      } else {
+        // 替换模式：只选择单个标签
+        params.delete("tags")
+        params.append("tags", value)
+      }
       params.delete("category")
     }
     return `/article?${params.toString()}`
   }
+
+  const isTagSelected = (tag: string) => currentTags.includes(tag)
 
   const clearFiltersUrl = "/article"
 
@@ -38,7 +58,7 @@ export function FilterSidebar({ categories, tags }: FilterSidebarProps) {
             <Link
               href="/article"
               className={`block px-3 py-2 rounded-md text-sm transition-colors ${
-                !currentCategory && !currentTag
+                !currentCategory && currentTags.length === 0
                   ? "bg-primary text-primary-foreground"
                   : "hover:bg-accent hover:text-accent-foreground"
               }`}
@@ -68,14 +88,14 @@ export function FilterSidebar({ categories, tags }: FilterSidebarProps) {
             {tags.map((tag) => (
               <Link
                 key={tag}
-                href={getFilterUrl("tag", tag)}
+                href={getFilterUrl("tag", tag, true)}
                 className={`transition-all ${
-                  currentTag === tag
-                    ? "ring-2 ring-primary"
+                  isTagSelected(tag)
+                    ? ""
                     : "hover:opacity-80"
                 }`}
               >
-                <Badge variant={currentTag === tag ? "default" : "secondary"}>
+                <Badge variant={isTagSelected(tag) ? "default" : "secondary"}>
                   #{tag}
                 </Badge>
               </Link>
@@ -84,7 +104,7 @@ export function FilterSidebar({ categories, tags }: FilterSidebarProps) {
         </div>
 
         {/* 清除筛选 */}
-        {(currentCategory || currentTag) && (
+        {(currentCategory || currentTags.length > 0) && (
           <div className="pt-2 border-t border-gray-200 dark:border-gray-800">
             <Link
               href={clearFiltersUrl}

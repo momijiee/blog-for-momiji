@@ -1,21 +1,23 @@
-import { getAllPosts, getPostsByCategory, getPostsByTag, getAllCategories, getAllTags } from "@/lib/posts";
+import { getAllPosts, getPostsByCategory, getPostsByTags, getAllCategories, getAllTags } from "@/lib/posts";
 import { AnimatedPostCard } from "@/components/ui/animated-post-card";
 import { FilterSidebar } from "@/components/ui/filter-sidebar";
 
 type Props = {
-  searchParams: Promise<{ category?: string; tag?: string }>;
+  searchParams: Promise<{ category?: string; tags?: string | string[] }>;
 };
 
 export default async function Article({ searchParams }: Props) {
-  const { category, tag } = await searchParams;
+  const { category, tags: tagsParam } = await searchParams;
   
   let posts = getAllPosts();
   
   // 根据分类或标签筛选
   if (category) {
     posts = getPostsByCategory(category);
-  } else if (tag) {
-    posts = getPostsByTag(tag);
+  } else if (tagsParam) {
+    // 处理多标签：tagsParam 可能是字符串或字符串数组
+    const selectedTags = Array.isArray(tagsParam) ? tagsParam : [tagsParam];
+    posts = getPostsByTags(selectedTags);
   }
 
   // 获取所有分类和标签
@@ -23,7 +25,12 @@ export default async function Article({ searchParams }: Props) {
   const tags = getAllTags();
 
   // 获取筛选条件的显示文本
-  const filterText = category ? `分类: ${category}` : tag ? `标签: ${tag}` : null;
+  const tagsArray = Array.isArray(tagsParam) ? tagsParam : tagsParam ? [tagsParam] : [];
+  const filterText = category
+    ? `分类: ${category}`
+    : tagsArray.length > 0
+      ? `标签: ${tagsArray.join(", ")}`
+      : null;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">

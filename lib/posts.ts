@@ -167,6 +167,14 @@ export function getPostsByTag(tag: string): BasePost[] {
   return getAllPosts().filter(post => post.tags?.includes(tag));
 }
 
+// 根据多个标签获取所有博客（AND 逻辑：文章必须包含所有指定的标签）
+export function getPostsByTags(tags: string[]): BasePost[] {
+  if (tags.length === 0) return getAllPosts();
+  return getAllPosts().filter(post =>
+    tags.every(tag => post.tags?.includes(tag))
+  );
+}
+
 
 
 
