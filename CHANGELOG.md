@@ -1,5 +1,21 @@
 # Changelog
 
+
+## [v0.8.0] - 2026-03-01
+### Added
+- Implemented view counter and like functionality with Supabase integration
+
+### Changed
+- Update blog post page to display view counts and allow user interactions
+
+---
+## [v0.7.1] - 2026-02-28
+### Added
+- **Multi-Tag Filtering**: Readers can now filter articles by multiple tags simultaneously.
+
+### Changed
+- **Navigation Simplification**: Removed category dropdown from main navigation bar.
+
 ---
 ## [v0.7.0] - 2026-02-28
 ### Added

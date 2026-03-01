@@ -7,6 +7,8 @@ import { notFound } from "next/navigation";
 import { NavLink } from "@/components/ui/nav-link";
 import { TableOfContents } from "@/components/ui/table-of-content"
 import { TagBadge } from "@/components/ui/tag-badge";
+import { ViewCounter } from "@/components/ui/view-counter";
+import { LikeButton } from "@/components/ui/like-button";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -58,18 +60,25 @@ export default async function BlogPostPage({ params }: Props) {
             <CardHeader>
               <CardTitle className="text-3xl">{post.title}</CardTitle>
               <div className="flex flex-col gap-2 mt-3">
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  {post.category && (
-                    <Link
-                      href={`/article?category=${encodeURIComponent(post.category)}`}
-                      className="hover:text-foreground transition-colors"
-                    >
-                      分类: {post.category}
-                    </Link>
-                  )}
-                  <span>{post.createdAt}</span>
+                <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-4">
+                    {post.category && (
+                      <Link
+                        href={`/article?category=${encodeURIComponent(post.category)}`}
+                        className="hover:text-foreground transition-colors"
+                      >
+                        分类: {post.category}
+                      </Link>
+                    )}
+                    <span>{post.createdAt}</span>
+                  </div>
+                  {/* 浏览量 + 点赞 */}
+                  <div className="flex items-center gap-3">
+                    <ViewCounter slug={post.slug} />
+                    <LikeButton slug={post.slug} />
+                  </div>
                 </div>
-                
+
                 {/* 标签显示 */}
                 {post.tags && post.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 pt-2">
