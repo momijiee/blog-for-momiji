@@ -8,18 +8,53 @@ interface LikeButtonProps {
   slug: string;
 }
 
+interface StatsCache {
+  likes: number;
+  hasLiked: boolean;
+}
+
+const cacheKey = (slug: string) => `blog:stats:${slug}`;
+
+function readCache(slug: string): StatsCache | null {
+  try {
+    const raw = localStorage.getItem(cacheKey(slug));
+    return raw ? (JSON.parse(raw) as StatsCache) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(slug: string, data: StatsCache) {
+  try {
+    localStorage.setItem(cacheKey(slug), JSON.stringify(data));
+  } catch {
+    // localStorage 不可用时静默忽略
+  }
+}
+
 export function LikeButton({ slug }: LikeButtonProps) {
   const [likes, setLikes] = useState<number | null>(null);
   const [hasLiked, setHasLiked] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
-  // 初始化：从 stats 接口获取点赞数和当前 IP 是否已点赞
+  // 初始化：先从缓存读取（立即显示），再后台请求最新数据并更新缓存
   useEffect(() => {
+    // 1. 立即从 localStorage 读取缓存，避免加载期间显示 "..."
+    const cached = readCache(slug);
+    if (cached) {
+      setLikes(cached.likes);
+      setHasLiked(cached.hasLiked);
+    }
+
+    // 2. 后台请求最新数据，到达后更新状态并写回缓存
     fetch(`/api/stats/${slug}`)
       .then((res) => res.json())
       .then((data) => {
         if (typeof data.likes === 'number') setLikes(data.likes);
         if (typeof data.hasLiked === 'boolean') setHasLiked(data.hasLiked);
+        if (typeof data.likes === 'number' && typeof data.hasLiked === 'boolean') {
+          writeCache(slug, { likes: data.likes, hasLiked: data.hasLiked });
+        }
       })
       .catch((err) => console.error('[LikeButton] Failed to fetch stats:', err));
   }, [slug]);
@@ -41,9 +76,14 @@ export function LikeButton({ slug }: LikeButtonProps) {
       });
       const data = await res.json();
 
-      // 用服务端返回的真实数据修正本地状态
+      // 用服务端返回的真实数据修正本地状态，并更新缓存
+      const newLikes = typeof data.likes === 'number' ? data.likes : likes;
+      const newHasLiked = typeof data.alreadyLiked === 'boolean' ? (data.alreadyLiked || true) : true;
       if (typeof data.likes === 'number') setLikes(data.likes);
-      if (typeof data.alreadyLiked === 'boolean') setHasLiked(data.alreadyLiked || true);
+      if (typeof data.alreadyLiked === 'boolean') setHasLiked(newHasLiked);
+      if (newLikes !== null) {
+        writeCache(slug, { likes: newLikes as number, hasLiked: newHasLiked });
+      }
     } catch (err) {
       // 请求失败时回滚乐观更新
       console.error('[LikeButton] Failed to record like:', err);
