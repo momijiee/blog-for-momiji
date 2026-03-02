@@ -6,26 +6,40 @@ import { MessageCircle } from "lucide-react";
 
 interface TableOfContentsProps {
   headings: Heading[];
+  commentCount?: number;
 }
 
-export function TableOfContents({ headings }: TableOfContentsProps) {
+export function TableOfContents({ headings, commentCount }: TableOfContentsProps) {
   const [activeIds, setActiveIds] = useState<Set<string>>(new Set());
+  const [commentActive, setCommentActive] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
+      const windowHeight = window.innerHeight || document.documentElement.clientHeight;
       const headingElements = headings
         .map((h) => document.getElementById(h.slug))
         .filter(Boolean) as HTMLElement[];
+
+      // Detect if comment section is currently in view (computed locally, no stale closure)
+      const commentEl = document.getElementById("comment-section");
+      let isCommentActive = false;
+      if (commentEl) {
+        const rect = commentEl.getBoundingClientRect();
+        isCommentActive = rect.top + 200 <= windowHeight && rect.bottom > 0;
+      }
+      setCommentActive(isCommentActive);
+
+      // When comment section is active, suppress heading highlights
+      if (isCommentActive) {
+        setActiveIds(new Set());
+        return;
+      }
 
       const visibleIds = new Set<string>();
 
       // Check which headings are currently visible in the viewport
       for (const el of headingElements) {
         const rect = el.getBoundingClientRect();
-        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-        
-        // Consider a heading visible if it's within the viewport
-        // Adding some margin (120px from top, full height from bottom)
         if (rect.top >= 0 && rect.top <= windowHeight) {
           visibleIds.add(el.id);
         }
@@ -144,13 +158,38 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
 
       {/* Divider + Jump to Comments link */}
       <div className="mt-4 pt-4 border-t border-border">
-        <a
-          href="#comment-section"
-          className="flex items-center gap-2 py-1.5 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
-        >
-          <MessageCircle size={14} />
-          <span>评论区</span>
-        </a>
+        <div className="relative">
+          {/* Background highlight layer — same visual as heading active state */}
+          <div
+            className={`absolute -mx-2 transition-all duration-300 ease-out rounded-md ${
+              commentActive ? "bg-slate-200 dark:bg-slate-800" : "bg-transparent"
+            }`}
+            style={{
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              transform: commentActive ? "scaleY(1)" : "scaleY(0)",
+              opacity: commentActive ? 1 : 0,
+            }}
+          />
+          <a
+            href="#comment-section"
+            className={`relative flex items-center gap-2 py-1.5 px-2 text-sm transition-colors duration-200 ${
+              commentActive
+                ? "text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <MessageCircle size={14} />
+            <span>评论区</span>
+            {commentCount != null && commentCount > 0 && (
+              <span className="text-muted-foreground font-normal">
+                ({commentCount})
+              </span>
+            )}
+          </a>
+        </div>
       </div>
     </div>
   );

@@ -6,6 +6,13 @@
 - Implement comment system UI with server/client component architecture
 - Implement antomatic retry mechanism for failed API requests
 
+### Changed
+- **Comment Section**: Refactored comment data fetching to the blog page level. This improves component reusability by making `CommentSection` a presentational component.
+- **Table of Contents (TOC)**: Integrated a "Jump to Comments" link. The TOC now receives the total comment count from the page to display alongside the link.
+
+### Fixed
+- **Scroll Behavior**: Resolved an issue where `JumpToComment` and `BackToTop` buttons would not show up together. They now appear simultaneously when the user scrolls down.
+
 ---
 ## [v0.8.2] - 2026-03-02
 ### Changed

@@ -1,18 +1,17 @@
-import { getApprovedComments } from '@/lib/comment';
+import type { Comment } from '@/types/comment';
 import CommentList from './comment-list';
 import CommentForm from './comment-form';
 
 interface CommentSectionProps {
   slug: string;
+  comments: Comment[];
 }
 
 /**
- * Server Component — fetches approved comments at request time,
+ * Server Component — receives pre-fetched approved comments from the parent page,
  * then delegates rendering to CommentList (server) and CommentForm (client).
  */
-export default async function CommentSection({ slug }: CommentSectionProps) {
-  const comments = await getApprovedComments(slug);
-
+export default function CommentSection({ slug, comments }: CommentSectionProps) {
   return (
     <section id="comment-section" className="mt-16 border-t border-border pt-10">
       <h2 className="mb-8 text-2xl font-bold">

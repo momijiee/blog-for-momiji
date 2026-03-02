@@ -15,7 +15,7 @@ export function JumpToComments({ className }: { className?: string }) {
       const commentSection = document.getElementById("comment-section");
 
       // Show after scrolling 300px
-      const shouldShow = scrollY > 300;
+      const shouldShow = scrollY > window.innerHeight * 0.8;
 
       // Hide once the comment section is in view
       if (commentSection) {

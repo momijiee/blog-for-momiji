@@ -12,6 +12,7 @@ import { LikeButton } from "@/components/ui/like-button";
 import CommentSection from "@/components/comment/comment-section";
 import { JumpToComments } from "@/components/ui/jump-to-comments";
 import { BackToTop } from "@/components/ui/back-to-top";
+import { getApprovedComments } from "@/lib/comment";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -48,6 +49,9 @@ export default async function BlogPostPage({ params }: Props) {
   const post = getPostBySlug(slug);
 
   if (!post) notFound();
+
+  const comments = await getApprovedComments(slug);
+  const commentCount = comments.length;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
@@ -112,7 +116,7 @@ export default async function BlogPostPage({ params }: Props) {
             </CardContent>
           </Card>
 
-          <CommentSection slug={post.slug} />
+          <CommentSection slug={post.slug} comments={comments} />
         </div>
         <aside className="
           hidden 
@@ -120,7 +124,7 @@ export default async function BlogPostPage({ params }: Props) {
           sticky top-20 h-fit
           p-4 bg-white dark:bg-black rounded-xl shadow-sm border border-gray-100 dark:border-gray-800
         ">
-          <TableOfContents headings={post.headings} />
+          <TableOfContents headings={post.headings} commentCount={commentCount} />
         </aside>
       </div>
       <BackToTop/>
