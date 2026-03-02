@@ -2,6 +2,7 @@
 
 import { Heading } from "@/types/post";
 import { useEffect, useState } from "react";
+import { MessageCircle } from "lucide-react";
 
 interface TableOfContentsProps {
   headings: Heading[];
@@ -140,6 +141,17 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
           );
         })}
       </nav>
+
+      {/* Divider + Jump to Comments link */}
+      <div className="mt-4 pt-4 border-t border-border">
+        <a
+          href="#comment-section"
+          className="flex items-center gap-2 py-1.5 px-2 text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
+        >
+          <MessageCircle size={14} />
+          <span>评论区</span>
+        </a>
+      </div>
     </div>
   );
 }

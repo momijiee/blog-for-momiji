@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.0.0] - 2026-03-02
+### Added
+- Implement comment system with database backend
+- Implement comment system UI with server/client component architecture
+- Implement antomatic retry mechanism for failed API requests
+
+---
 ## [v0.8.2] - 2026-03-02
 ### Changed
 - Optimize database query frequency with timestamp-based cache control

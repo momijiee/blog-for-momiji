@@ -14,7 +14,7 @@ export default async function CommentSection({ slug }: CommentSectionProps) {
   const comments = await getApprovedComments(slug);
 
   return (
-    <section className="mt-16 border-t border-border pt-10">
+    <section id="comment-section" className="mt-16 border-t border-border pt-10">
       <h2 className="mb-8 text-2xl font-bold">
         评论
         {comments.length > 0 && (

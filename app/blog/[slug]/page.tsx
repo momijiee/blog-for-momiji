@@ -10,6 +10,8 @@ import { TagBadge } from "@/components/ui/tag-badge";
 import { ViewCounter } from "@/components/ui/view-counter";
 import { LikeButton } from "@/components/ui/like-button";
 import CommentSection from "@/components/comment/comment-section";
+import { JumpToComments } from "@/components/ui/jump-to-comments";
+import { BackToTop } from "@/components/ui/back-to-top";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -48,7 +50,7 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
+    <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
         <div className="lg:col-span-3">
           <NavLink
@@ -121,6 +123,8 @@ export default async function BlogPostPage({ params }: Props) {
           <TableOfContents headings={post.headings} />
         </aside>
       </div>
+      <BackToTop/>
+      <JumpToComments />
     </div>
   );
 }

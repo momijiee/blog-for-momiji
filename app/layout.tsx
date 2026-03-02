@@ -43,7 +43,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
         <header className="border-b">
-          <nav className="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
+          <nav className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
             <div className="flex gap-1">
               <NavLink href="/">Home</NavLink>
               <NavLink href="/article">Article</NavLink>
@@ -56,7 +56,6 @@ export default function RootLayout({
         <footer className="border-t py-6 text-center text-sm text-muted-foreground">
           © {new Date().getFullYear()} Momiji
         </footer>
-        <BackToTop/>
         </ThemeProvider>
       </body>
     </html>
