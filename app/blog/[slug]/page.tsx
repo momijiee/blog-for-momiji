@@ -9,6 +9,7 @@ import { TableOfContents } from "@/components/ui/table-of-content"
 import { TagBadge } from "@/components/ui/tag-badge";
 import { ViewCounter } from "@/components/ui/view-counter";
 import { LikeButton } from "@/components/ui/like-button";
+import CommentSection from "@/components/comment/comment-section";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -108,6 +109,8 @@ export default async function BlogPostPage({ params }: Props) {
               <MdxContent source={post.content} />
             </CardContent>
           </Card>
+
+          <CommentSection slug={post.slug} />
         </div>
         <aside className="
           hidden 
