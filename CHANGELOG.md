@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.8.2] - 2026-03-02
+### Changed
+- Optimize database query frequency with timestamp-based cache control
+- Refactor cache logic into shared utility module
+
+---
 ## [v0.8.1] - 2026-03-01
 ### Added
 - Implement client-side caching for view counts and like status

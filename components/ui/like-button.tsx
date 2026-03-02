@@ -3,33 +3,15 @@
 import { useEffect, useState } from 'react';
 import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  readCache,
+  writeCache,
+  isCacheFresh,
+  type SlugCache,
+} from '@/lib/stats-cache';
 
 interface LikeButtonProps {
   slug: string;
-}
-
-interface StatsCache {
-  likes: number;
-  hasLiked: boolean;
-}
-
-const cacheKey = (slug: string) => `blog:stats:${slug}`;
-
-function readCache(slug: string): StatsCache | null {
-  try {
-    const raw = localStorage.getItem(cacheKey(slug));
-    return raw ? (JSON.parse(raw) as StatsCache) : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeCache(slug: string, data: StatsCache) {
-  try {
-    localStorage.setItem(cacheKey(slug), JSON.stringify(data));
-  } catch {
-    // localStorage 不可用时静默忽略
-  }
 }
 
 export function LikeButton({ slug }: LikeButtonProps) {
@@ -37,33 +19,47 @@ export function LikeButton({ slug }: LikeButtonProps) {
   const [hasLiked, setHasLiked] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
-  // 初始化：先从缓存读取（立即显示），再后台请求最新数据并更新缓存
+  // Initialise: show cache immediately, then conditionally fetch from DB
   useEffect(() => {
-    // 1. 立即从 localStorage 读取缓存，避免加载期间显示 "..."
     const cached = readCache(slug);
-    if (cached) {
+
+    // 1. Show cached data right away to avoid "..." flash
+    if (cached !== null) {
       setLikes(cached.likes);
       setHasLiked(cached.hasLiked);
     }
 
-    // 2. 后台请求最新数据，到达后更新状态并写回缓存
+    // 2. Only hit the DB if cache is absent or stale (> 30 min)
+    if (cached && isCacheFresh(cached)) {
+      return;
+    }
+
     fetch(`/api/stats/${slug}`)
       .then((res) => res.json())
       .then((data) => {
-        if (typeof data.likes === 'number') setLikes(data.likes);
-        if (typeof data.hasLiked === 'boolean') setHasLiked(data.hasLiked);
-        if (typeof data.likes === 'number' && typeof data.hasLiked === 'boolean') {
-          writeCache(slug, { likes: data.likes, hasLiked: data.hasLiked });
-        }
+        const newLikes = typeof data.likes === 'number' ? data.likes : cached?.likes ?? 0;
+        const newHasLiked = typeof data.hasLiked === 'boolean' ? data.hasLiked : cached?.hasLiked ?? false;
+
+        setLikes(newLikes);
+        setHasLiked(newHasLiked);
+
+        const prev = readCache(slug);
+        const updated: SlugCache = {
+          views: typeof data.views === 'number' ? data.views : prev?.views ?? 0,
+          likes: newLikes,
+          hasLiked: newHasLiked,
+          lastFetchedAt: Date.now(),
+          lastViewedDate: prev?.lastViewedDate ?? '',
+        };
+        writeCache(slug, updated);
       })
       .catch((err) => console.error('[LikeButton] Failed to fetch stats:', err));
   }, [slug]);
 
   async function handleLike() {
-    // 已点赞或请求进行中，不允许重复操作
     if (hasLiked || isPending) return;
 
-    // 乐观更新：先在 UI 上立即反映变化
+    // Optimistic update
     setIsPending(true);
     setHasLiked(true);
     setLikes((prev) => (prev !== null ? prev + 1 : prev));
@@ -76,16 +72,26 @@ export function LikeButton({ slug }: LikeButtonProps) {
       });
       const data = await res.json();
 
-      // 用服务端返回的真实数据修正本地状态，并更新缓存
       const newLikes = typeof data.likes === 'number' ? data.likes : likes;
       const newHasLiked = typeof data.alreadyLiked === 'boolean' ? (data.alreadyLiked || true) : true;
+
       if (typeof data.likes === 'number') setLikes(data.likes);
       if (typeof data.alreadyLiked === 'boolean') setHasLiked(newHasLiked);
+
+      // Write back to cache with refreshed TTL
       if (newLikes !== null) {
-        writeCache(slug, { likes: newLikes as number, hasLiked: newHasLiked });
+        const prev = readCache(slug);
+        const updated: SlugCache = {
+          views: prev?.views ?? 0,
+          likes: newLikes as number,
+          hasLiked: newHasLiked,
+          lastFetchedAt: Date.now(),
+          lastViewedDate: prev?.lastViewedDate ?? '',
+        };
+        writeCache(slug, updated);
       }
     } catch (err) {
-      // 请求失败时回滚乐观更新
+      // Roll back optimistic update on failure
       console.error('[LikeButton] Failed to record like:', err);
       setHasLiked(false);
       setLikes((prev) => (prev !== null ? prev - 1 : prev));
