@@ -1,17 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getAllPosts, getPostBySlug } from "@/lib/posts";
-import Image from "next/image";
-import Link from "next/link";
-import { motion } from "framer-motion"
+import { getPostBySlug, getAllPosts } from "@/lib/posts";
 import { AnimatedPostCard } from "@/components/ui/animated-post-card";
-import { BasePost, PostWithHeadings } from "@/types/post";
 
-
-
+const FEATURED_SLUGS = [
+  'beyond-meritocracy-1-collapse', 
+  'beyond-meritocracy-2-fall',
+  'beyond-meritocracy-3-escape'
+];
 
 export default function Home() {
-  const post1 = getPostBySlug('meritocracy')!;
-  const post2 = getPostBySlug('from-being-seen-to-living')!;
+  // 尝试获取推荐文章，若不存在则回退到最新文章
+  const featuredPosts = FEATURED_SLUGS
+    .map((slug) => getPostBySlug(slug))
+    .filter((post): post is NonNullable<typeof post> => post !== undefined);
+
+  const fallbackPosts = featuredPosts.length === 0
+    ? getAllPosts().slice(0, 2)
+    : featuredPosts;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
@@ -28,7 +33,7 @@ export default function Home() {
           <br />
           目前在南方的一所985学习计算机。
           但技术并不是我理解世界的唯一方式。
-          比起“掌握了什么”，我更在意一个人如何形成他的价值观、判断力与生活方式。
+          比起"掌握了什么"，我更在意一个人如何形成他的价值观、判断力与生活方式。
           <br />
           <br />
           我成长于一个高度功绩化的环境，也曾认真地投入其中；
@@ -59,9 +64,15 @@ export default function Home() {
       <br/>
       <br/>
       <h1 className="mb-8 text-2xl font-semibold">推荐阅读</h1>
-      <AnimatedPostCard>{post1}</AnimatedPostCard>
-      <br/>
-      <AnimatedPostCard>{post2}</AnimatedPostCard>
+      {fallbackPosts.length > 0 ? (
+        <div className="flex flex-col gap-4">
+          {fallbackPosts.map((post) => (
+            <AnimatedPostCard key={post.slug}>{post}</AnimatedPostCard>
+          ))}
+        </div>
+      ) : (
+        <p className="text-muted-foreground text-sm">暂无文章，敬请期待。</p>
+      )}
     </div>
   );
 }

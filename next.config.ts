@@ -3,6 +3,15 @@ import createMDX from "@next/mdx"
 
 const nextConfig: NextConfig = {
   pageExtensions: ["js", "ts", "tsx", "md", "mdx"],
+  async redirects() {
+    return [
+      {
+        source: "/blog/meritocracy",
+        destination: "/blog/beyond-meritocracy-1-collapse",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 const withMDX = createMDX({
