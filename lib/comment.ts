@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import type { Comment } from '@/types/comment';
 
 /**
@@ -7,7 +7,7 @@ import type { Comment } from '@/types/comment';
  * the tree structure is assembled in the UI layer.
  */
 export async function getApprovedComments(slug: string): Promise<Comment[]> {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('comments')
     .select('id, parent_id, nickname, content, created_at')
     .eq('slug', slug)
@@ -46,7 +46,7 @@ export async function submitComment(
 ): Promise<SubmitCommentResult> {
   const { slug, nickname, email, content, parent_id, ip, userAgent } = payload;
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from('comments')
     .insert({
       slug,

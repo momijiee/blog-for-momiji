@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import MdxContent from "@/components/mdx-content";
-import { getAllPosts, getPostBySlug} from "@/lib/posts";
+import { getPostBySlug} from "@/lib/posts";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -14,12 +14,9 @@ import { JumpToComments } from "@/components/ui/jump-to-comments";
 import { BackToTop } from "@/components/ui/back-to-top";
 import { getApprovedComments } from "@/lib/comment";
 
-type Props = { params: Promise<{ slug: string }> };
+export const dynamic = 'force-dynamic';
 
-export async function generateStaticParams() {
-  const posts = getAllPosts();
-  return posts.map((post) => ({ slug: post.slug }));
-}
+type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params;

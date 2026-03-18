@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getIp } from "@/lib/get-ip";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -12,7 +12,7 @@ export async function GET(_request: Request, { params }: Params) {
   const { slug } = await params;
 
   try {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getSupabaseAdmin()
       .from('comments')
       .select('id, parent_id, nickname, content, created_at')
       .eq('slug', slug)
@@ -73,7 +73,7 @@ export async function POST(request: Request, { params }: Params) {
   }
 
   try {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getSupabaseAdmin()
       .from('comments')
       .insert({
         slug,

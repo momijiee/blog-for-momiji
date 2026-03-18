@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getIp } from "@/lib/get-ip";
 
 export const dynamic = 'force-dynamic';
@@ -14,17 +14,17 @@ function isRetryable(error: unknown): boolean {
 
 async function fetchStats(slug: string, ip: string) {
   const [viewsResult, likesResult, hasLikedResult] = await Promise.all([
-    supabaseAdmin
+    getSupabaseAdmin()
       .from('post_views')
       .select('*', { count: 'exact', head: true })
       .eq('slug', slug),
 
-    supabaseAdmin
+    getSupabaseAdmin()
       .from('post_likes')
       .select('*', { count: 'exact', head: true })
       .eq('slug', slug),
 
-    supabaseAdmin
+    getSupabaseAdmin()
       .from('post_likes')
       .select('id')
       .eq('slug', slug)

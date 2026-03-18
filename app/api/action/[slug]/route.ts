@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getSupabaseAdmin } from "@/lib/supabase-admin";
 import { getIp } from "@/lib/get-ip";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -78,7 +78,7 @@ async function handleView(slug: string, ip: string) {
   const today = new Date().toISOString().slice(0, 10);
 
   // upsert: 若 (slug, ip, viewed_date) 已存在则忽略（onConflict），不报错
-  const { error } = await supabaseAdmin
+  const { error } = await getSupabaseAdmin()
     .from('post_views')
     .upsert(
       { slug, ip, viewed_date: today },
@@ -91,7 +91,7 @@ async function handleView(slug: string, ip: string) {
   }
 
   // 返回最新浏览量
-  const { count, error: countError } = await supabaseAdmin
+  const { count, error: countError } = await getSupabaseAdmin()
     .from('post_views')
     .select('*', { count: 'exact', head: true })
     .eq('slug', slug);
@@ -107,7 +107,7 @@ async function handleView(slug: string, ip: string) {
 // ─── 点赞处理 ──────────────────────────────────────────────────────────────────
 
 async function handleLike(slug: string, ip: string) {
-  const { error } = await supabaseAdmin
+  const { error } = await getSupabaseAdmin()
     .from('post_likes')
     .insert({ slug, ip });
 
@@ -115,7 +115,7 @@ async function handleLike(slug: string, ip: string) {
   if (error) {
     if (error.code === '23505') {
       // 已点赞，返回当前点赞数和已点赞标志
-      const { count } = await supabaseAdmin
+      const { count } = await getSupabaseAdmin()
         .from('post_likes')
         .select('*', { count: 'exact', head: true })
         .eq('slug', slug);
@@ -128,7 +128,7 @@ async function handleLike(slug: string, ip: string) {
   }
 
   // 点赞成功，返回最新点赞数
-  const { count, error: countError } = await supabaseAdmin
+  const { count, error: countError } = await getSupabaseAdmin()
     .from('post_likes')
     .select('*', { count: 'exact', head: true })
     .eq('slug', slug);
