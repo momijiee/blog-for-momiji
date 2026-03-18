@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { getIp } from "@/lib/get-ip";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -25,10 +26,42 @@ export async function POST(request: Request, { params }: Params) {
   const { type } = body;
 
   if (type === 'view') {
+    // 浏览量：每 IP 每分钟最多 10 次（防止脚本刷量，正常翻页不受影响）
+    const rl = checkRateLimit(`${ip}:view`, 10, 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: 'Too many requests.' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rl.limit.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': Math.ceil(rl.resetAt / 1000).toString(),
+            'Retry-After': Math.ceil((rl.resetAt - Date.now()) / 1000).toString(),
+          },
+        }
+      );
+    }
     return handleView(slug, ip);
   }
 
   if (type === 'like') {
+    // 点赞：每 IP 每分钟最多 5 次（DB 层已有唯一约束，此处防止无效请求轰炸）
+    const rl = checkRateLimit(`${ip}:like`, 5, 60 * 1000);
+    if (!rl.success) {
+      return NextResponse.json(
+        { error: 'Too many requests.' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rl.limit.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': Math.ceil(rl.resetAt / 1000).toString(),
+            'Retry-After': Math.ceil((rl.resetAt - Date.now()) / 1000).toString(),
+          },
+        }
+      );
+    }
     return handleLike(slug, ip);
   }
 

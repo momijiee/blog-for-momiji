@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { getIp } from "@/lib/get-ip";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = 'force-dynamic';
 
@@ -34,6 +35,23 @@ export async function POST(request: Request, { params }: Params) {
   const { slug } = await params;
   const ip = getIp(request);
   const userAgent = request.headers.get('user-agent') ?? '';
+
+  // 速率限制：每 IP 每分钟最多提交 3 条评论
+  const rl = checkRateLimit(`${ip}:comment`, 3, 60 * 1000);
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please wait before submitting another comment.' },
+      {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': rl.limit.toString(),
+          'X-RateLimit-Remaining': '0',
+          'X-RateLimit-Reset': Math.ceil(rl.resetAt / 1000).toString(),
+          'Retry-After': Math.ceil((rl.resetAt - Date.now()) / 1000).toString(),
+        },
+      }
+    );
+  }
 
   let body: { nickname?: string; email?: string; content?: string; parent_id?: string };
   try {
