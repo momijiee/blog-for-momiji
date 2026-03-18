@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getIp } from "@/lib/get-ip";
 
 export const dynamic = 'force-dynamic';
 
@@ -46,8 +47,7 @@ export async function GET(request: Request, { params }: Params) {
   const { slug } = await params;
 
   // 获取请求方 IP，用于判断当前用户是否已点赞
-  const forwarded = request.headers.get('x-forwarded-for');
-  const ip = forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1';
+  const ip = getIp(request);
 
   try {
     // 并行查询：浏览量、点赞数、当前 IP 是否已点赞

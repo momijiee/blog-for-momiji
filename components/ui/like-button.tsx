@@ -73,10 +73,11 @@ export function LikeButton({ slug }: LikeButtonProps) {
       const data = await res.json();
 
       const newLikes = typeof data.likes === 'number' ? data.likes : likes;
-      const newHasLiked = typeof data.alreadyLiked === 'boolean' ? (data.alreadyLiked || true) : true;
+      // After any like action (fresh or duplicate), the user has always liked this post.
+      const newHasLiked = true;
 
       if (typeof data.likes === 'number') setLikes(data.likes);
-      if (typeof data.alreadyLiked === 'boolean') setHasLiked(newHasLiked);
+      setHasLiked(newHasLiked);
 
       // Write back to cache with refreshed TTL
       if (newLikes !== null) {

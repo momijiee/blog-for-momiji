@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getIp } from "@/lib/get-ip";
 
 type Params = { params: Promise<{ slug: string }> };
-
-// 从请求 headers 中提取客户端 IP
-function getIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  return forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1';
-}
 
 /**
  * POST /api/action/[slug]

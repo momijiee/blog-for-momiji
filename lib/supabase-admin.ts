@@ -10,5 +10,6 @@ if (!supabaseUrl || !supabaseServiceKey) {
 
 export const supabaseAdmin = createClient(
   supabaseUrl,
-  supabaseServiceKey
+  supabaseServiceKey,
+  { auth: { persistSession: false } }
 );

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
+import { getIp } from "@/lib/get-ip";
 
 export const dynamic = 'force-dynamic';
 
@@ -27,12 +28,6 @@ export async function GET(_request: Request, { params }: Params) {
       { status: 500 }
     );
   }
-}
-
-
-function getIp(request: Request): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  return forwarded ? forwarded.split(',')[0].trim() : '127.0.0.1';
 }
 
 export async function POST(request: Request, { params }: Params) {
