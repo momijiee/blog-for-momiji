@@ -48,7 +48,7 @@ export default async function BlogPostPage({ params }: Props) {
   if (!post) notFound();
 
   const comments = await getApprovedComments(slug);
-  const commentCount = comments.length;
+  const commentCount = comments?.length ?? 0;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">

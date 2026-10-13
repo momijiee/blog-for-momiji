@@ -1,104 +1,35 @@
-import { NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/supabase-admin";
-import { getIp } from "@/lib/get-ip";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { getPostBySlug } from '@/lib/posts';
+import { getIp } from '@/lib/get-ip';
+import { backendRequest, backendError, unavailable, unwrapBackend } from '@/lib/interaction-api';
+import type { Comment } from '@/types/comment';
 
 export const dynamic = 'force-dynamic';
-
-
 type Params = { params: Promise<{ slug: string }> };
 
 export async function GET(_request: Request, { params }: Params) {
   const { slug } = await params;
-
+  if (!getPostBySlug(slug)) return Response.json({ error: 'Article not found' }, { status: 404 });
   try {
-    const { data, error } = await getSupabaseAdmin()
-      .from('comments')
-      .select('id, parent_id, nickname, content, created_at')
-      .eq('slug', slug)
-      .eq('status', 'approved')
-      .order('created_at', { ascending: true });
-
-    if (error) throw error;
-
-    return NextResponse.json({ comments: data ?? [] });
-  } catch (error) {
-    console.error('[GET /api/comments] Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch comments' },
-      { status: 500 }
-    );
-  }
+    const response = await backendRequest(`/api/v1/interaction/${encodeURIComponent(slug)}/comments`);
+    if (!response.ok) return backendError(response);
+    const comments = await unwrapBackend<Comment[]>(response);
+    return Response.json({ comments }, { headers: { 'Cache-Control': 'no-store' } });
+  } catch { return unavailable(); }
 }
 
 export async function POST(request: Request, { params }: Params) {
   const { slug } = await params;
-  const ip = getIp(request);
-  const userAgent = request.headers.get('user-agent') ?? '';
-
-  // 速率限制：每 IP 每分钟最多提交 3 条评论
-  const rl = checkRateLimit(`${ip}:comment`, 3, 60 * 1000);
-  if (!rl.success) {
-    return NextResponse.json(
-      { error: 'Too many requests. Please wait before submitting another comment.' },
-      {
-        status: 429,
-        headers: {
-          'X-RateLimit-Limit': rl.limit.toString(),
-          'X-RateLimit-Remaining': '0',
-          'X-RateLimit-Reset': Math.ceil(rl.resetAt / 1000).toString(),
-          'Retry-After': Math.ceil((rl.resetAt - Date.now()) / 1000).toString(),
-        },
-      }
-    );
-  }
-
-  let body: { nickname?: string; email?: string; content?: string; parent_id?: string };
+  if (!getPostBySlug(slug)) return Response.json({ error: 'Article not found' }, { status: 404 });
+  let body: unknown;
+  try { body = await request.json(); } catch { return Response.json({ error: 'Invalid JSON body' }, { status: 400 }); }
+  if (!body || typeof body !== 'object') return Response.json({ error: 'Invalid JSON body' }, { status: 400 });
   try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
-  }
-
-  const { nickname, email, content, parent_id } = body;
-
-  // content 是必填项
-  if (!content || content.trim().length === 0) {
-    return NextResponse.json({ error: 'content is required' }, { status: 400 });
-  }
-
-  // 防止超长内容
-  if (content.trim().length > 500) {
-    return NextResponse.json({ error: 'content too long (max 500 chars)' }, { status: 400 });
-  }
-
-  try {
-    const { data, error } = await getSupabaseAdmin()
-      .from('comments')
-      .insert({
-        slug,
-        parent_id: parent_id ?? null,
-        nickname: nickname?.trim() || null,
-        email: email?.trim() || null,
-        content: content.trim(),
-        status: 'pending',   // 默认待审核
-        ip,
-        user_agent: userAgent,
-      })
-      .select('id, created_at')
-      .single();
-
-    if (error) throw error;
-
-    return NextResponse.json(
-      { message: 'Comment submitted, pending review', id: data.id, created_at: data.created_at },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error('[POST /api/comments] Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to submit comment' },
-      { status: 500 }
-    );
-  }
+    const response = await backendRequest(`/api/v1/interaction/${encodeURIComponent(slug)}/comments`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'User-Agent': request.headers.get('user-agent') ?? '' },
+      body: JSON.stringify(body),
+    }, getIp(request));
+    if (!response.ok) return backendError(response);
+    const data = await unwrapBackend<{ id: string; created_at: string }>(response);
+    return Response.json({ message: 'Comment submitted, pending review', ...data }, { status: 201 });
+  } catch { return unavailable(); }
 }

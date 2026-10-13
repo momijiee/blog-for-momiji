@@ -39,6 +39,7 @@ export default function CommentList({ comments }: CommentListProps) {
           key={root.id}
           comment={root}
           replies={childrenMap.get(root.id) ?? []}
+          childrenMap={childrenMap}
           depth={0}
         />
       ))}

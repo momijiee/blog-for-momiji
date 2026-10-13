@@ -7,6 +7,7 @@ interface CommentItemProps {
   replies?: Comment[];
   /** Depth level for visual indentation (0 = top-level) */
   depth?: number;
+  childrenMap?: Map<string, Comment[]>;
 }
 
 function formatDate(iso: string): string {
@@ -21,6 +22,7 @@ export default function CommentItem({
   comment,
   replies = [],
   depth = 0,
+  childrenMap,
 }: CommentItemProps) {
   const displayName = comment.nickname?.trim() || '匿名';
 
@@ -58,7 +60,7 @@ export default function CommentItem({
       {replies.length > 0 && (
         <div className="flex flex-col gap-3">
           {replies.map((reply) => (
-            <CommentItem key={reply.id} comment={reply} depth={depth + 1} />
+            <CommentItem key={reply.id} comment={reply} replies={childrenMap?.get(reply.id) ?? []} childrenMap={childrenMap} depth={depth + 1} />
           ))}
         </div>
       )}

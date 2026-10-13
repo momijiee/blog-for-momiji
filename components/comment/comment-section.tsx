@@ -4,7 +4,7 @@ import CommentForm from './comment-form';
 
 interface CommentSectionProps {
   slug: string;
-  comments: Comment[];
+  comments: Comment[] | null;
 }
 
 /**
@@ -16,14 +16,16 @@ export default function CommentSection({ slug, comments }: CommentSectionProps) 
     <section id="comment-section" className="mt-16 border-t border-border pt-10">
       <h2 className="mb-8 text-2xl font-bold">
         评论
-        {comments.length > 0 && (
+        {comments && comments.length > 0 && (
           <span className="ml-2 text-base font-normal text-muted-foreground">
             ({comments.length})
           </span>
         )}
       </h2>
 
-      <CommentList comments={comments} />
+      {comments === null ? (
+        <p className="py-6 text-sm text-muted-foreground" role="status">评论服务暂不可用，请稍后再试。</p>
+      ) : <CommentList comments={comments} />}
       <CommentForm slug={slug} />
     </section>
   );

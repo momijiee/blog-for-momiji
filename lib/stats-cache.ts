@@ -5,7 +5,7 @@
  *   blog:stats:<slug>  →  SlugCache (JSON)
  *
  * TTL: 30 minutes after last DB fetch, reads come from cache only.
- * View dedup: only one view recorded per slug per calendar day (local date).
+ * View dedup: only one view recorded per slug per UTC day.
  */
 
 export interface SlugCache {
@@ -21,15 +21,11 @@ export interface SlugCache {
 /** Cache TTL in milliseconds (30 minutes) */
 export const CACHE_TTL_MS = 30 * 60 * 1000;
 
-const cacheKey = (slug: string) => `blog:stats:${slug}`;
+const cacheKey = (slug: string) => `blog:stats:v2:${slug}`;
 
-/** Returns today's date as YYYY-MM-DD in the user's local timezone */
-export function todayLocalDate(): string {
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}`;
+/** Returns today's UTC date, matching the Go database uniqueness key. */
+export function todayUtcDate(): string {
+  return new Date().toISOString().slice(0, 10);
 }
 
 export function readCache(slug: string): SlugCache | null {
@@ -56,5 +52,5 @@ export function isCacheFresh(cache: SlugCache): boolean {
 
 /** Returns true if a view has already been recorded today for this slug */
 export function hasViewedToday(cache: SlugCache): boolean {
-  return cache.lastViewedDate === todayLocalDate();
+  return cache.lastViewedDate === todayUtcDate();
 }

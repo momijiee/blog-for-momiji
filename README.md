@@ -109,6 +109,17 @@ Not optimized for virality. Optimized for clarity, depth, and continuity.
 
 ---
 
+## Interaction service
+
+The MDX files in `content/posts` remain the article source. The Next.js
+`/api/comments`, `/api/stats`, and `/api/action` routes proxy interaction
+requests to Momiji Server over HTTPS. Set `INTERACTION_PROXY_SECRET` as a
+server-only Vercel Secret matching the Go service, and optionally set
+`MOMIJI_API_URL` (defaults to `https://api.momiji.dev`). See `.env.example`.
+Go interaction data starts empty; old Supabase counts are not migrated.
+When the Go API is unavailable, article content still renders and interaction
+components show an unavailable state.
+
 ## 📄 License
 
 MIT

@@ -5,9 +5,8 @@ import { Eye } from 'lucide-react';
 import {
   readCache,
   writeCache,
-  isCacheFresh,
   hasViewedToday,
-  todayLocalDate,
+  todayUtcDate,
   type SlugCache,
 } from '@/lib/stats-cache';
 
@@ -17,6 +16,7 @@ interface ViewCounterProps {
 
 export function ViewCounter({ slug }: ViewCounterProps) {
   const [views, setViews] = useState<number | null>(null);
+  const [unavailable, setUnavailable] = useState(false);
 
   useEffect(() => {
     const cached = readCache(slug);
@@ -28,12 +28,7 @@ export function ViewCounter({ slug }: ViewCounterProps) {
 
     // 2. Decide whether to hit the DB
     const needsViewRecord = !cached || !hasViewedToday(cached);
-    const needsFetch = !cached || !isCacheFresh(cached);
-
-    if (!needsViewRecord && !needsFetch) {
-      // Cache is fresh and view already recorded today – nothing to do
-      return;
-    }
+    // Always revalidate so a cached count cannot hide a backend outage.
 
     if (needsViewRecord) {
       // First visit of the day: optimistically increment, then record + fetch
@@ -46,8 +41,10 @@ export function ViewCounter({ slug }: ViewCounterProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'view' }),
       })
-        .then((res) => res.json())
+        .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
         .then((data) => {
+          if (typeof data.views !== 'number') throw new Error('Invalid view response');
+          setUnavailable(false);
           const newViews = typeof data.views === 'number' ? data.views : cached?.views ?? 0;
           setViews(newViews);
 
@@ -58,20 +55,23 @@ export function ViewCounter({ slug }: ViewCounterProps) {
             likes: prev?.likes ?? 0,
             hasLiked: prev?.hasLiked ?? false,
             lastFetchedAt: Date.now(),
-            lastViewedDate: todayLocalDate(),
+            lastViewedDate: todayUtcDate(),
           };
           writeCache(slug, updated);
         })
         .catch((err) => {
           console.error('[ViewCounter] Failed to record view:', err);
+          setUnavailable(true);
           // Roll back optimistic increment
           if (cached !== null) setViews(cached.views);
         });
-    } else if (needsFetch) {
+    } else {
       // Cache is stale but view already recorded today: fetch stats without recording a view
       fetch(`/api/stats/${slug}`)
-        .then((res) => res.json())
+        .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
         .then((data) => {
+          if (typeof data.views !== 'number') throw new Error('Invalid stats response');
+          setUnavailable(false);
           const newViews = typeof data.views === 'number' ? data.views : cached?.views ?? 0;
           setViews(newViews);
 
@@ -85,14 +85,14 @@ export function ViewCounter({ slug }: ViewCounterProps) {
           };
           writeCache(slug, updated);
         })
-        .catch((err) => console.error('[ViewCounter] Failed to fetch stats:', err));
+        .catch((err) => { console.error('[ViewCounter] Failed to fetch stats:', err); setUnavailable(true); });
     }
   }, [slug]);
 
   return (
     <span className="flex items-center gap-1 text-sm text-muted-foreground">
       <Eye className="h-4 w-4" />
-      {views === null ? '...' : views.toLocaleString()}
+      {unavailable ? '暂不可用' : views === null ? '...' : views.toLocaleString()}
     </span>
   );
 }
