@@ -5,7 +5,7 @@ import type { ActivityDay, ActivityResponse, ActivitySource } from "@/lib/activi
 
 const SOURCES: Record<ActivitySource, { name: string; unit: string; timezone: string; note: string }> = {
   github: { name: "GitHub", unit: "贡献", timezone: "UTC", note: "个人资料贡献日历；只包含资料页可见的贡献。" },
-  openrouter: { name: "OpenRouter", unit: "请求", timezone: "UTC", note: "每天的 API 请求次数；当前只回填近 30 日。" },
+  openrouter: { name: "OpenRouter", unit: "请求", timezone: "UTC", note: "每天的 API 请求次数；历史数据按 UTC 日汇总。" },
   leetcode: { name: "LeetCode", unit: "通过题目", timezone: "Asia/Shanghai", note: "中国站当天首次通过的独立题目数；数据待手动导入。" },
   codex: { name: "Codex", unit: "桌面会话", timezone: "Asia/Shanghai", note: "这台设备已保存的桌面会话启动数；未覆盖其他设备或云端。" },
 };
@@ -55,8 +55,8 @@ export function ActivityBoard({ activity }: { activity: ActivityResponse }) {
   const weeks = useMemo(() => calendarWeeks(from, activity.to), [from, activity.to]);
   const sourceState = activity.sources.find((item) => item.source === source);
   const records = useMemo(() => new Map(activity.days
-    .filter((day) => day.source === source)
-    .map((day) => [day.source_date, day])), [activity.days, source]);
+    .filter((day) => day.source === source && day.metric === sourceState?.metric)
+    .map((day) => [day.source_date, day])), [activity.days, source, sourceState?.metric]);
   const selectedRecord: ActivityDay | undefined = records.get(selectedDate);
   const selectedStatus = selectedRecord
     ? selectedRecord.value === 0 ? "确认为零活动" : `${selectedRecord.value} ${SOURCES[source].unit}`
