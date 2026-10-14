@@ -48,7 +48,9 @@ function formatTime(value: string | null | undefined) {
 export function ActivityBoard({ activity }: { activity: ActivityResponse }) {
   const [source, setSource] = useState<ActivitySource>("github");
   const [range, setRange] = useState<90 | 365>(365);
-  const [selectedDate, setSelectedDate] = useState(activity.to);
+  const [selectedDate, setSelectedDate] = useState(
+    activity.sources.find((item) => item.source === "github")?.latest_source_date ?? activity.to,
+  );
   const from = range === 90 ? shiftDate(activity.to, -89) : activity.from;
   const weeks = useMemo(() => calendarWeeks(from, activity.to), [from, activity.to]);
   const sourceState = activity.sources.find((item) => item.source === source);
