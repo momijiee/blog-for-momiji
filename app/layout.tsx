@@ -47,6 +47,7 @@ export default function RootLayout({
             <div className="flex gap-1">
               <NavLink href="/">Home</NavLink>
               <NavLink href="/article">Article</NavLink>
+              <NavLink href="/activity">Activity</NavLink>
               <NavLink href="/about">Me</NavLink>
             </div>
             <ThemeToggle />
