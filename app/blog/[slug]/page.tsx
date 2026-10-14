@@ -29,11 +29,12 @@ export async function generateMetadata({ params }: Props) {
   return {
     title: post.title,
     description: post.description,
+    alternates: { canonical: `/blog/${post.slug}` },
     openGraph: {
       title: post.title,
       description: post.description,
       type: "article",
-      url: `https://momiji.dev/blog/${post.slug}`,
+      url: `https://www.momiji.dev/blog/${post.slug}`,
       images: post.image
         ? [{ url: post.image }]
         : undefined,
@@ -90,7 +91,7 @@ export default async function BlogPostPage({ params }: Props) {
                       <TagBadge
                         key={tag}
                         tag={tag}
-                        href={`/article?tag=${encodeURIComponent(tag)}`}
+                        href={`/article?tags=${encodeURIComponent(tag)}`}
                       />
                     ))}
                   </div>

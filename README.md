@@ -18,7 +18,7 @@ This project treats both **code and content as first-class citizens**, emphasizi
   Subtle hover/tap interactions powered by Framer Motion.
 
 * 🔍 **SEO-friendly**
-  Static generation, metadata support, and sitemap integration.
+  Article metadata and sitemap integration.
 
 * 🧠 **Content-first design**
   Post previews use explicit descriptions instead of auto-truncated content.
@@ -71,6 +71,8 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 ## 📝 Writing Posts
 
 Blog posts are stored in `content/posts` as `.mdx` files.
+
+See [PUBLISHING.md](./PUBLISHING.md) for the required front matter, validation, preview, publishing and rollback steps.
 
 Each post includes front matter such as:
 

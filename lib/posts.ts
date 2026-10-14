@@ -108,6 +108,7 @@ export function getAllPosts(): BasePost[] {
  * 根据slug获取单篇博客文章（包含标题信息）
  */
 export function getPostBySlug(slug: string): PostWithHeadings | undefined {
+  if (!/^[a-z0-9][a-z0-9_-]{0,99}$/.test(slug)) return undefined;
   
   const filePath = path.join(postsDir, `${slug}.mdx`);
   

@@ -1,23 +1,22 @@
-"use client"
-
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
 
 interface TagBadgeProps {
   tag: string
   href?: string
   variant?: "default" | "secondary" | "destructive" | "outline" | "ghost" | "link"
-  onClick?: (e: React.MouseEvent) => void
 }
 
-export function TagBadge({ tag, href, variant = "secondary", onClick }: TagBadgeProps) {
+export function TagBadge({ tag, href, variant = "secondary" }: TagBadgeProps) {
+  if (href) {
+    return (
+      <Badge asChild variant={variant}>
+        <Link href={href}>#{tag}</Link>
+      </Badge>
+    )
+  }
+
   return (
-    <Badge
-      variant={variant}
-      className="cursor-pointer hover:opacity-80 transition-opacity"
-      onClick={onClick}
-      data-href={href}
-    >
-      #{tag}
-    </Badge>
+    <Badge variant={variant}>#{tag}</Badge>
   )
 }

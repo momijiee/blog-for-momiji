@@ -6,7 +6,6 @@ import Link from "next/link";
 import { BasePost, PostWithHeadings } from "@/types/post";
 import Image from "next/image";
 import { TagBadge } from "@/components/ui/tag-badge";
-import { useRouter } from "next/navigation";
 
 interface AnimatedPostCardProps{
     children: BasePost | PostWithHeadings
@@ -19,16 +18,7 @@ const cardVariants = {
 
 
 export function AnimatedPostCard({ children }:AnimatedPostCardProps) {
-    const router = useRouter();
-
-    const handleTagClick = (e: React.MouseEvent, tag: string) => {
-      e.preventDefault();
-      e.stopPropagation();
-      router.push(`/article?tag=${encodeURIComponent(tag)}`);
-    };
-
     return(
-        <Link href={`/blog/${children.slug}`}>
             <motion.div
                   variants={cardVariants}
                   whileHover="hover"
@@ -42,6 +32,7 @@ export function AnimatedPostCard({ children }:AnimatedPostCardProps) {
                 dark:ring-1 ring-white/10
                 dark:hover:ring-white/30
               ">
+                <Link href={`/blog/${children.slug}`} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                 {children.image && (
                   <div className="relative aspect-[2/1] w-full">
                     <Image
@@ -64,15 +55,17 @@ export function AnimatedPostCard({ children }:AnimatedPostCardProps) {
                   <p className="line-clamp-2 text-sm text-muted-foreground mb-3">
                     {children.description}
                   </p>
-                  
+                </CardContent>
+                </Link>
+                <CardContent>
                   {/* 标签显示 */}
                   {children.tags && children.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex flex-wrap gap-2 mb-3">
                       {children.tags.map((tag) => (
                         <TagBadge
                           key={tag}
                           tag={tag}
-                          onClick={(e) => handleTagClick(e, tag)}
+                          href={`/article?tags=${encodeURIComponent(tag)}`}
                         />
                       ))}
                     </div>
@@ -84,6 +77,5 @@ export function AnimatedPostCard({ children }:AnimatedPostCardProps) {
                 </CardContent>
               </Card>
             </motion.div>
-        </Link>
     )
 }

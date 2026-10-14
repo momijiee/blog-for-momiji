@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/blog/meritocracy",
-        destination: "/blog/beyond-meritocracy-1-collapse",
+        destination: "/blog/after-the-halo-fades-1",
         permanent: true,
       },
     ];
